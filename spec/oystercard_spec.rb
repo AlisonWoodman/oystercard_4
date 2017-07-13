@@ -3,7 +3,7 @@ require 'oystercard'
 describe Oystercard do
 
   subject(:oyster) { described_class.new }
-  let(:oyster_empty) { described_class.new }
+  let(:loaded_oyster) { described_class.new(90) }
   let(:amount) { 50 }
   let (:fare) { 2 }
   let(:entrance) { "bank" }
@@ -31,21 +31,19 @@ describe Oystercard do
 
    it 'limits balance to 90' do
      maximum_balance = Oystercard::LIMIT
-     oyster.top_up(maximum_balance)
-     expect{ oyster.top_up(amount)}.to raise_error "Maximum limit exceeded £#{maximum_balance}"
+     expect{ loaded_oyster.top_up(amount)}.to raise_error "Maximum limit exceeded £#{maximum_balance}"
    end
  end
 
   context 'station state' do
-  before(:each) { oyster.top_up(amount)}
 
    it 'touches in card' do
-     oyster.touch_in(entrance)
-     expect(oyster).to be_in_journey
+     loaded_oyster.touch_in(entrance)
+     expect(loaded_oyster).to be_in_journey
    end
 
    it 'does not allow to touch in if balance is less than minimum fare' do
-     expect{ oyster_empty.touch_in(entrance) }.to raise_error("Sorry, not enough balance!")
+     expect{ oyster.touch_in(entrance) }.to raise_error("Sorry, not enough balance!")
    end
  end
 
@@ -55,29 +53,27 @@ describe Oystercard do
     end
 
     it "remember the entry station after the touch in" do
-      oyster.top_up(amount)
-      oyster.touch_in(entrance)
-      expect(oyster.journey[:entry_station]).to eq entrance
+      loaded_oyster.touch_in(entrance)
+      expect(loaded_oyster.journey[:entry_station]).to eq entrance
     end
   end
 
    context '#touch_out' do
      before (:each) do
-       oyster.top_up(amount)
-       oyster.touch_in(entrance)
-       oyster.touch_out(exit_st)
+       loaded_oyster.touch_in(entrance)
+       loaded_oyster.touch_out(exit_st)
      end
 
      it 'touches out card' do
-       expect(oyster).not_to be_in_journey
+       expect(loaded_oyster).not_to be_in_journey
      end
 
      it 'checks that a charge is made on touch out' do
-       expect{ oyster.touch_out(exit_st) }.to change {oyster.balance}.by (-described_class::MINIMUM_FARE)
+       expect{ loaded_oyster.touch_out(exit_st) }.to change {loaded_oyster.balance}.by (-described_class::MINIMUM_FARE)
      end
 
      it 'checks that after touching in and out creates a journey' do
-      expect(oyster.history).to include journey
+      expect(loaded_oyster.history).to include journey
     end
    end
 end

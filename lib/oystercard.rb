@@ -6,8 +6,8 @@ class Oystercard
 
   attr_reader :balance, :journey, :history
 
-  def initialize
-    @balance = 0
+  def initialize(balance = 0)
+    @balance = balance
     @history = []
     @journey = { :entry_station => nil, :exit_station => nil}
   end
