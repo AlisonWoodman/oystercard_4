@@ -4,6 +4,7 @@ class Oystercard
   DEFAULT_BALANCE = 0
   LIMIT = 90
   MINIMUM_FARE = 1
+  PENALTY_FARE = 6
 
   attr_reader :balance, :journey, :history
 
@@ -17,30 +18,35 @@ class Oystercard
     @balance += amount
   end
 
-  def in_journey?
-    if @history.empty?
-      false
-    else
-      journey.in_journey?
-    end
-  end
-
   def touch_in(station)
     raise "Sorry, not enough balance!" if balance < MINIMUM_FARE
+    if in_journey?
+      puts "Penalty fare deducted"
+      deduct(PENALTY_FARE)
+    end
     @journey = Journey.new
     journey.record_entry_station(station)
     @history << journey
   end
 
   def touch_out(station)
-    deduct(MINIMUM_FARE)
-    journey.record_exit_station(station)
+    if in_journey?
+      deduct(MINIMUM_FARE)
+      journey.record_exit_station(station)
+    else
+      puts "Penalty fare deducted"
+      deduct(PENALTY_FARE)
+    end
   end
 
 private
 
-def deduct(fare)
-  @balance -= fare
-end
+  def deduct(fare)
+    @balance -= fare
+  end
 
+  def in_journey?
+    return false if history.empty?
+    journey.in_journey?
+  end
 end
