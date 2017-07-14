@@ -11,12 +11,16 @@ attr_reader :entry_station, :exit_station
     @entry_station = station
   end
 
-  def record_exit_station
-
+  def record_exit_station(station)
+    @exit_station = station
   end
 
   def completed_journey
 
+  end
+
+  def in_journey?
+    @entry_station != nil && exit_station == nil
   end
 
    def status

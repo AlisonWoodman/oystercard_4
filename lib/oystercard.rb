@@ -1,5 +1,3 @@
-require_relative 'journey'
-require_relative 'station'
 
 class Oystercard
 
@@ -12,7 +10,6 @@ class Oystercard
   def initialize(balance = 0)
     @balance = balance
     @history = []
-  #  @journey = { :entry_station => nil, :exit_station => nil} #to remove
   end
 
   def top_up(amount)
@@ -21,25 +18,23 @@ class Oystercard
   end
 
   def in_journey?
-     @journey[:entry_station] != nil
-     #journey.status
+    if @history.empty?
+      false
+    else
+      journey.in_journey?
+    end
   end
 
   def touch_in(station)
     raise "Sorry, not enough balance!" if balance < MINIMUM_FARE
-  #  @journey[:entry_station] = station
     @journey = Journey.new
     journey.record_entry_station(station)
-
+    @history << journey
   end
 
   def touch_out(station)
     deduct(MINIMUM_FARE)
-    @journey[:exit_station] = station
-    @history << journey
-    @journey = { :entry_station => nil, :exit_station => nil}
-    #journey.record_exit_station(station)
-    #journey.save_completed_journey
+    journey.record_exit_station(station)
   end
 
 private

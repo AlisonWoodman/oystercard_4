@@ -1,0 +1,11 @@
+#! /usr/bin/env ruby -v
+
+require 'irb'
+
+puts 'Loading files...'
+
+require './lib/oystercard.rb'
+require './lib/journey.rb'
+require './lib/station.rb'
+
+IRB.start

@@ -8,7 +8,7 @@ describe Oystercard do
   let (:fare) { 2 }
   let(:entrance) { "bank" }
   let(:exit_st) { "aldgate" }
-  let(:journey) {{entry_station:"bank", exit_station:"aldgate"}}
+  let(:my_journey) {{entry_station: entrance, exit_station: exit_st}}
 
   context '#initialize' do
     it 'has balance of 0' do
@@ -48,13 +48,10 @@ describe Oystercard do
  end
 
    context "#touch_in" do
-    it "sets entry station to nil" do
-      expect(oyster.journey[:entry_station]).to be nil
-    end
 
     it "remember the entry station after the touch in" do
       loaded_oyster.touch_in(entrance)
-      expect(loaded_oyster.journey[:entry_station]).to eq entrance
+      expect(loaded_oyster.history[0].entry_station).to eq entrance
     end
   end
 
@@ -72,8 +69,8 @@ describe Oystercard do
        expect{ loaded_oyster.touch_out(exit_st) }.to change {loaded_oyster.balance}.by (-described_class::MINIMUM_FARE)
      end
 
-     it 'checks that after touching in and out creates a journey' do
-      expect(loaded_oyster.history).to include journey
-    end
+    #  it 'checks that after touching in and out creates a journey' do
+    #   expect(loaded_oyster.history.last).to eq
+    # end
    end
 end
